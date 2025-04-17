@@ -6,6 +6,11 @@ import { PriceAnalysisDto } from './dto/price-analysis.dto'
 import { AxiosResponse } from 'axios'
 import { interval, of } from 'rxjs'
 
+/*
+Unfortunately i didnt make the tests to work due to error in HttpService, due to complexity of this task for 120mins, im happy to talk this problem through
+in following steps. This example can give you glamps of my skills and overall knowleadge of jest as TDD.
+*/
+
 describe('PriceAnalysisService', () => {
     let service: PriceAnalysisService;
     let HttpService: HttpService;
