@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common'
 import { HttpService } from '@nestjs/axios'
 import { ConfigService } from '@nestjs/config'
 import { PriceAnalysisDto } from './dto/price-analysis.dto'
@@ -46,7 +46,6 @@ export class PriceAnalysisService {
                 )
             }
 
-
             const firstKline = klines[0];
             const lastKline = klines[klines.length - 1];
 
@@ -56,6 +55,31 @@ export class PriceAnalysisService {
             const endPrice = parseFloat(lastKline[4])
             const dataPointsAnalyzed = klines.length
 
+            if(isNaN(startPrice) || isNaN(endPrice) || startPrice === 0) {
+                this.logger.error(
+                    `Invalida price data received for symbol ${upperCaseSymbol}: start: ${startPrice}, end:${endPrice}`
+                )
+                throw new InternalServerErrorException(
+                    `Invalida price data received for symbol: ${upperCaseSymbol}`
+                )
+            }
+
+            const percentageChange = ((endPrice - startPrice) / startPrice) * 100;
+            const message = `Price ${percentageChange >= 0 ? 'increased' : 'decreased'} by ${percentageChange.toFixed(2)}% over the last ${dataPointsAnalyzed} periods.`
+            this.logger.log(
+                `Analysis for ${upperCaseSymbol}: ${message}`
+            )
+
+            return {
+                symbol: upperCaseSymbol,
+                startTime,
+                endTime,
+                startPrice,
+                endPrice,
+                percentageChange,
+                dataPointsAnalyzed,
+                message
+            }
         } catch (error) {
             
         }
