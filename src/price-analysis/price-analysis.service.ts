@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios'
 import { ConfigService } from '@nestjs/config'
 import { PriceAnalysisDto } from './dto/price-analysis.dto'
 import { firstValueFrom } from 'rxjs'
+import { AxiosError } from 'axios'
 
 @Injectable()
 export class PriceAnalysisService {
@@ -81,7 +82,24 @@ export class PriceAnalysisService {
                 message
             }
         } catch (error) {
-            
+            this.logger.error(
+                `Failed to fetch or analyze data for ${upperCaseSymbol}: ${error.message}`,
+                error.stack
+            )
+
+            if (error instanceof AxiosError && error.response) {
+                this.logger.error(
+                    `Binance API Error: ${error.response.status}`
+                )
+                if (error.response.status == 404) {
+                    throw new NotFoundException(
+                        `Invalid symbol or no data avaliable for ${upperCaseSymbol}`
+                    )
+                }
+            }
+            throw new InternalServerErrorException(
+                `Failed to fetch or analyze data for symbol ${upperCaseSymbol}`
+            )
         }
     }
 }
