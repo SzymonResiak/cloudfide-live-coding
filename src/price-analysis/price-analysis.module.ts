@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common'
 import { HttpModule } from '@nestjs/axios'
-import { PriceAnalysisController } from './price-analysis.controller' // will add in next commits
-import { PriceAnalysisService } from './price-analysis.service' // will add in next commits
+import { PriceAnalysisController } from './price-analysis.controller'
+import { PriceAnalysisService } from './price-analysis.service'
+
 import { ConfigModule } from '@nestjs/config'
 
 @Module({
